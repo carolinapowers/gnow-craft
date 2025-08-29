@@ -64,7 +64,7 @@ const filteredTeeTimes = computed(() => {
         :key="teeTime.id"
         class="p-3 border rounded-lg"
       >
-        {{ teeTime.course }} - {{ teeTime.time }} - $ {{ teeTime.price }}
+        {{ teeTime.course }} - {{ teeTime.time }} - ${{ teeTime.price }}
       </div>
     </div>
   </div>
