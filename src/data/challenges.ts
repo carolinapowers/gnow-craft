@@ -286,7 +286,7 @@ function getAvailableSlots(date: Date, bookedTimes: string[]): string[] {
   
   for (let hour = 6; hour < 18; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
-      const timeStr = \`\${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:\${minute.toString().padStart(2, '0')} \${hour >= 12 ? 'PM' : 'AM'}\`
+      const timeStr = \`\${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:\${minute.toString().padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}\`
       
       if (!bookedTimes.includes(timeStr)) {
         slots.push(timeStr)
