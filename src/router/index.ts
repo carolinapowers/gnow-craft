@@ -8,6 +8,7 @@ import ReactiveData from '../views/ReactiveData.vue'
 import JavaScriptPractice from '../views/JavaScriptPractice.vue'
 import TestingPractice from '../views/TestingPractice.vue'
 import DataFetching from '../views/DataFetching.vue'
+import VueDebugging from '../views/VueDebugging.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/data-fetching',
       name: 'data-fetching',
       component: DataFetching
+    },
+    {
+      path: '/vue-debugging',
+      name: 'vue-debugging',
+      component: VueDebugging
     }
   ]
 })

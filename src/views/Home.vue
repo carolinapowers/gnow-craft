@@ -147,6 +147,13 @@ const sections: Section[] = [
     tags: ['Fetch API', 'Async/Await', 'Error Handling', 'Caching']
   },
   {
+    title: 'Vue Debugging Practice',
+    path: '/vue-debugging',
+    description: 'Debug Vue components in an interactive environment with code editor, preview, and console.',
+    icon: '🐛',
+    tags: ['Debugging', 'Vue Components', 'Problem Solving']
+  },
+  {
     title: 'Practice Arena',
     path: '/practice',
     description: 'Free-form practice area to experiment with Vue concepts and build components.',
