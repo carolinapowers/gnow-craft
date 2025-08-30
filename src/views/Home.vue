@@ -154,6 +154,13 @@ const sections: Section[] = [
     tags: ['Debugging', 'Vue Components', 'Problem Solving']
   },
   {
+    title: 'CSS & Styling Best Practices',
+    path: '/css-best-practices',
+    description: 'Master CSS best practices with Vue, Tailwind, responsive design, and media queries.',
+    icon: '🎨',
+    tags: ['CSS', 'Tailwind', 'Responsive', 'Media Queries']
+  },
+  {
     title: 'Practice Arena',
     path: '/practice',
     description: 'Free-form practice area to experiment with Vue concepts and build components.',

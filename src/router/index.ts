@@ -9,6 +9,7 @@ import JavaScriptPractice from '../views/JavaScriptPractice.vue'
 import TestingPractice from '../views/TestingPractice.vue'
 import DataFetching from '../views/DataFetching.vue'
 import VueDebugging from '../views/VueDebugging.vue'
+import CssBestPractices from '../views/CssBestPractices.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/vue-debugging',
       name: 'vue-debugging',
       component: VueDebugging
+    },
+    {
+      path: '/css-best-practices',
+      name: 'css-best-practices',
+      component: CssBestPractices
     }
   ]
 })

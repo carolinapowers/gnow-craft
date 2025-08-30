@@ -40,9 +40,15 @@
                 </button>
                 <button 
                   @click="runCode"
-                  class="px-3 py-1 text-xs bg-golf-600 text-white rounded hover:bg-golf-700 transition-colors"
+                  :disabled="isCompiling"
+                  :class="[
+                    'px-3 py-1 text-xs rounded transition-colors',
+                    isCompiling 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-golf-600 text-white hover:bg-golf-700'
+                  ]"
                 >
-                  Run Code
+                  {{ isCompiling ? 'Compiling...' : 'Run Code' }}
                 </button>
               </div>
             </div>
@@ -90,16 +96,24 @@
             <!-- Preview Tab -->
             <div v-show="activeTab === 'preview'" class="h-full p-4">
               <div class="h-full border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center bg-gray-50">
-                <div v-if="previewError" class="text-center">
+                <div v-if="compilationError" class="text-center">
                   <div class="text-red-500 text-6xl mb-4">⚠️</div>
-                  <h3 class="text-lg font-semibold text-red-600 mb-2">Component Error</h3>
-                  <p class="text-sm text-gray-600 max-w-md">{{ previewError }}</p>
+                  <h3 class="text-lg font-semibold text-red-600 mb-2">Compilation Error</h3>
+                  <pre class="text-sm text-left bg-red-50 p-3 rounded border text-red-800 max-w-md">{{ compilationError }}</pre>
                 </div>
-                <div v-else-if="!previewContent" class="text-center text-gray-400">
+                <div v-else-if="!compiledComponent && !isCompiling" class="text-center text-gray-400">
                   <div class="text-4xl mb-2">🔧</div>
-                  <p>Click "Run Code" to see preview</p>
+                  <p>Click "Run Code" to compile and preview</p>
                 </div>
-                <div v-else v-html="previewContent" class="w-full"></div>
+                <div v-else-if="isCompiling" class="text-center text-gray-400">
+                  <div class="text-4xl mb-2 animate-spin">⚙️</div>
+                  <p>Compiling component...</p>
+                </div>
+                <div v-else class="text-center text-green-600">
+                  <div class="text-4xl mb-2">✅</div>
+                  <p>Component compiled successfully!</p>
+                  <p class="text-sm text-gray-600 mt-1">Switch to Browser tab to see it render</p>
+                </div>
               </div>
             </div>
 
@@ -121,19 +135,40 @@
             <div v-show="activeTab === 'browser'" class="h-full p-4">
               <div class="h-full border border-gray-200 rounded-lg bg-white overflow-auto">
                 <div class="p-4">
-                  <div v-if="browserError" class="text-center py-8">
+                  <div v-if="runtimeError" class="text-center py-8">
                     <div class="text-red-500 text-4xl mb-2">❌</div>
                     <h3 class="text-lg font-semibold text-red-600 mb-2">Runtime Error</h3>
-                    <pre class="text-sm text-left bg-red-50 p-3 rounded border text-red-800">{{ browserError }}</pre>
+                    <pre class="text-sm text-left bg-red-50 p-3 rounded border text-red-800">{{ runtimeError }}</pre>
                   </div>
-                  <div v-else-if="!mockPreview" class="text-center py-8 text-gray-400">
+                  <div v-else-if="!compiledComponent" class="text-center py-8 text-gray-400">
                     <div class="text-4xl mb-2">🌐</div>
-                    <p>Component will render here</p>
+                    <p>Compile component first to see it render</p>
                   </div>
                   <div v-else class="space-y-4">
-                    <div class="p-4 border rounded-lg bg-blue-50">
-                      <h4 class="font-semibold text-blue-900 mb-2">Mock Component Output:</h4>
-                      <div v-html="mockPreview"></div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border">
+                      <h4 class="font-semibold text-blue-900">Live Component:</h4>
+                      <div class="text-sm text-blue-700">
+                        {{ compiledComponent ? 'Rendering' : 'Not compiled' }}
+                      </div>
+                    </div>
+                    <!-- Dynamic Component Rendering -->
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                      <div class="mb-2 text-xs text-gray-500">
+                        Debug: Component = {{ !!compiledComponent }}, Error = {{ !!runtimeError }}
+                      </div>
+                      
+                      <ErrorBoundary @error="handleRuntimeError">
+                        <component 
+                          v-if="compiledComponent" 
+                          :is="compiledComponent"
+                          :title="'Sample Title'"
+                          :description="'This is a test description'"
+                          :status="'active'"
+                        />
+                        <div v-else-if="!runtimeError" class="text-gray-500 text-sm">
+                          No component to render
+                        </div>
+                      </ErrorBoundary>
                     </div>
                   </div>
                 </div>
@@ -168,7 +203,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, defineComponent, markRaw, h } from 'vue'
+import { compileVueComponent } from '../utils/vue-compiler'
 
 interface Scenario {
   id: string
@@ -178,6 +214,48 @@ interface Scenario {
   hints: string[]
   expectedFixes: string[]
 }
+
+// Error Boundary Component
+const ErrorBoundary = defineComponent({
+  emits: ['error'],
+  setup(_, { emit, slots }) {
+    const hasError = ref(false)
+    const error = ref<Error | null>(null)
+
+    const resetError = () => {
+      hasError.value = false
+      error.value = null
+    }
+
+    return () => {
+      if (hasError.value) {
+        return h('div', { 
+          class: 'text-red-600 p-4 bg-red-50 rounded border' 
+        }, [
+          h('p', { class: 'font-semibold' }, 'Component Error:'),
+          h('pre', { class: 'text-sm mt-2 whitespace-pre-wrap' }, error.value?.message || 'Unknown error'),
+          h('button', {
+            class: 'mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700',
+            onClick: resetError
+          }, 'Reset')
+        ])
+      }
+
+      try {
+        return slots.default?.()
+      } catch (err: any) {
+        hasError.value = true
+        error.value = err
+        emit('error', err)
+        return null
+      }
+    }
+  },
+  errorCaptured(err: unknown) {
+    console.error('ErrorBoundary caught:', err)
+    return false
+  }
+})
 
 const getReactivityCode = () => {
   return `<template>
@@ -325,10 +403,10 @@ const currentCode = ref('')
 const activeTab = ref('preview')
 const showHints = ref(false)
 const consoleLogs = ref<Array<{type: string; message: string; timestamp: Date}>>([])
-const previewContent = ref('')
-const previewError = ref('')
-const browserError = ref('')
-const mockPreview = ref('')
+const compiledComponent = ref<any>(null)
+const compilationError = ref('')
+const runtimeError = ref('')
+const isCompiling = ref(false)
 
 const tabs = [
   { id: 'preview', label: 'Preview' },
@@ -357,10 +435,10 @@ function resetCode() {
 
 function resetOutput() {
   consoleLogs.value = []
-  previewContent.value = ''
-  previewError.value = ''
-  browserError.value = ''
-  mockPreview.value = ''
+  compiledComponent.value = null
+  compilationError.value = ''
+  runtimeError.value = ''
+  isCompiling.value = false
 }
 
 function addConsoleLog(type: string, message: string) {
@@ -373,121 +451,45 @@ function addConsoleLog(type: string, message: string) {
 
 function runCode() {
   resetOutput()
-  addConsoleLog('info', 'Running code...')
+  isCompiling.value = true
+  addConsoleLog('info', 'Starting compilation...')
   
   try {
-    // Analyze the code for common issues
-    const analysis = analyzeCode(currentCode.value)
+    // Compile the Vue component
+    const result = compileVueComponent(currentCode.value, addConsoleLog)
     
-    if (analysis.errors.length > 0) {
-      analysis.errors.forEach(error => {
-        addConsoleLog('error', error)
-      })
-      previewError.value = analysis.errors[0]
-      return
+    if (result.error) {
+      addConsoleLog('error', `Compilation failed: ${result.error}`)
+      compilationError.value = result.error
+      activeTab.value = 'preview'
+    } else {
+      compiledComponent.value = markRaw(result.component)
+      addConsoleLog('success', 'Component compiled successfully!')
+      // Switch to browser tab to show the result
+      activeTab.value = 'browser'
     }
-    
-    // Generate mock preview based on the scenario
-    generateMockPreview()
-    
-    addConsoleLog('success', 'Component compiled successfully')
-    previewContent.value = '<div class="text-green-600">✅ Component ready - switch to Browser tab to see it render</div>'
-    
   } catch (error: any) {
-    addConsoleLog('error', error.message)
-    previewError.value = error.message
-    browserError.value = error.stack || error.message
+    addConsoleLog('error', `Unexpected error: ${error.message}`)
+    compilationError.value = error.message
+    activeTab.value = 'preview'
+  } finally {
+    isCompiling.value = false
   }
 }
 
-function analyzeCode(code: string) {
-  const errors: string[] = []
-  
-  // Check for common issues based on current scenario
-  if (currentScenarioId.value === 'reactive-bug') {
-    if (!code.includes('ref(') && !code.includes('reactive(')) {
-      errors.push('Missing reactive declaration - use ref() or reactive()')
-    }
-    if (code.includes('let count = 0') && !code.includes('ref(0)')) {
-      errors.push('Variable "count" is not reactive - wrap with ref()')
-    }
-  }
-  
-  if (currentScenarioId.value === 'lifecycle-bug') {
-    if (code.includes('titleRef.value?.offsetWidth') && !code.includes('onMounted')) {
-      errors.push('DOM access outside lifecycle hook - move to onMounted()')
-    }
-  }
-  
-  if (currentScenarioId.value === 'prop-validation') {
-    if (code.includes("defineProps(['title'") && !code.includes('String')) {
-      errors.push('Props need type validation - use proper prop types')
-    }
-  }
-  
-  return { errors }
-}
 
-function generateMockPreview() {
-  switch (currentScenarioId.value) {
-    case 'reactive-bug':
-      if (currentCode.value.includes('ref(0)')) {
-        mockPreview.value = `
-          <div class="p-4">
-            <h2 class="text-xl font-bold mb-4">Counter Component</h2>
-            <div class="flex items-center gap-4">
-              <button class="px-4 py-2 bg-blue-500 text-white rounded">Count: 5</button>
-              <button class="px-3 py-2 bg-gray-500 text-white rounded">Reset</button>
-            </div>
-          </div>
-        `
-      } else {
-        browserError.value = 'Count is not reactive - clicks don\'t update the display'
-        mockPreview.value = `
-          <div class="p-4">
-            <div class="bg-red-50 border border-red-200 rounded p-3">
-              <p class="text-red-800">❌ Counter not updating - count stays at 0</p>
-            </div>
-          </div>
-        `
-      }
-      break
-    case 'prop-validation':
-      mockPreview.value = `
-        <div class="p-4 border rounded-lg">
-          <h3 class="text-lg font-semibold">Sample Title</h3>
-          <p class="text-gray-600">Sample description</p>
-          <div class="mt-2">
-            <span class="px-2 py-1 text-sm rounded bg-blue-100 text-blue-800">active</span>
-          </div>
-        </div>
-      `
-      break
-    case 'lifecycle-bug':
-      if (currentCode.value.includes('onMounted')) {
-        mockPreview.value = `
-          <div class="p-4">
-            <h2 class="text-xl font-bold mb-4">Dynamic Title</h2>
-            <input class="border p-2 rounded w-full" placeholder="Type something..." />
-            <p class="mt-2 text-sm text-gray-600">Title width: 142px</p>
-          </div>
-        `
-      } else {
-        browserError.value = 'Cannot read properties of null (reading \'offsetWidth\')'
-        mockPreview.value = `
-          <div class="p-4">
-            <div class="bg-red-50 border border-red-200 rounded p-3">
-              <p class="text-red-800">❌ TypeError: Cannot read offsetWidth of null</p>
-            </div>
-          </div>
-        `
-      }
-      break
-  }
+function handleRuntimeError(error: Error) {
+  runtimeError.value = error.message
+  addConsoleLog('error', `Runtime error: ${error.message}`)
 }
 
 function onCodeChange() {
-  // Could implement auto-run with debouncing here
+  // Clear previous compilation when user starts typing
+  if (compiledComponent.value) {
+    compiledComponent.value = null
+    compilationError.value = ''
+    runtimeError.value = ''
+  }
 }
 
 function logTypeClass(type: string): string {
