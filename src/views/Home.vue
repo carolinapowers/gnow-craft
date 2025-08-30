@@ -133,6 +133,13 @@ const sections: Section[] = [
     tags: ['ES6+', 'Algorithms', 'DOM', 'Async']
   },
   {
+    title: 'Testing with Vitest',
+    path: '/testing-practice',
+    description: 'Learn unit testing, component testing, and TDD practices with Vitest and Vue Test Utils.',
+    icon: '🧪',
+    tags: ['Unit Tests', 'TDD', 'Mocking', 'Coverage']
+  },
+  {
     title: 'Practice Arena',
     path: '/practice',
     description: 'Free-form practice area to experiment with Vue concepts and build components.',

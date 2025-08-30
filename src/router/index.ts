@@ -6,6 +6,7 @@ import TeeTimeBooking from '../views/TeeTimeBooking.vue'
 import ComponentCommunication from '../views/ComponentCommunication.vue'
 import ReactiveData from '../views/ReactiveData.vue'
 import JavaScriptPractice from '../views/JavaScriptPractice.vue'
+import TestingPractice from '../views/TestingPractice.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/javascript-practice',
       name: 'javascript-practice',
       component: JavaScriptPractice
+    },
+    {
+      path: '/testing-practice',
+      name: 'testing-practice',
+      component: TestingPractice
     }
   ]
 })
