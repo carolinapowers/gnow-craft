@@ -126,6 +126,13 @@ const sections: Section[] = [
     tags: ['Reactivity', 'Computed', 'Watchers']
   },
   {
+    title: 'JavaScript Fundamentals',
+    path: '/javascript-practice',
+    description: 'Master core JavaScript concepts commonly tested in frontend interviews.',
+    icon: '🔧',
+    tags: ['ES6+', 'Algorithms', 'DOM', 'Async']
+  },
+  {
     title: 'Practice Arena',
     path: '/practice',
     description: 'Free-form practice area to experiment with Vue concepts and build components.',
