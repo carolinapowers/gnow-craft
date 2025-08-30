@@ -7,6 +7,7 @@ import ComponentCommunication from '../views/ComponentCommunication.vue'
 import ReactiveData from '../views/ReactiveData.vue'
 import JavaScriptPractice from '../views/JavaScriptPractice.vue'
 import TestingPractice from '../views/TestingPractice.vue'
+import DataFetching from '../views/DataFetching.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/testing-practice',
       name: 'testing-practice',
       component: TestingPractice
+    },
+    {
+      path: '/data-fetching',
+      name: 'data-fetching',
+      component: DataFetching
     }
   ]
 })

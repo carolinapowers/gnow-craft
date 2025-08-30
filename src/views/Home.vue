@@ -140,6 +140,13 @@ const sections: Section[] = [
     tags: ['Unit Tests', 'TDD', 'Mocking', 'Coverage']
   },
   {
+    title: 'Data Fetching & APIs',
+    path: '/data-fetching',
+    description: 'Master API integration, async operations, error handling, and caching strategies.',
+    icon: '🌐',
+    tags: ['Fetch API', 'Async/Await', 'Error Handling', 'Caching']
+  },
+  {
     title: 'Practice Arena',
     path: '/practice',
     description: 'Free-form practice area to experiment with Vue concepts and build components.',
