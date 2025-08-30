@@ -759,7 +759,7 @@ const runPlaygroundRequest = async () => {
     
   } catch (error) {
     playgroundResult.value = JSON.stringify({
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }, null, 2)
   } finally {
     playgroundLoading.value = false

@@ -18,6 +18,7 @@ export interface Challenge {
   starterCode: string;
   solution: string;
   testCases: TestCase[];
+  tags?: string[];
 }
 
 export interface TestCase {

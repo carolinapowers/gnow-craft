@@ -293,7 +293,7 @@ const runChallenge = () => {
     
     challengeOutput.value = JSON.stringify(result)
   } catch (error) {
-    challengeOutput.value = `Error: ${error.message}`
+    challengeOutput.value = `Error: ${error instanceof Error ? error.message : String(error)}`
   }
 }
 </script>

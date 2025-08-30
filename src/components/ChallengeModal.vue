@@ -127,7 +127,7 @@ interface TestResult {
 
 const props = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
   complete: [id: string]
 }>()
@@ -153,7 +153,7 @@ const runCode = () => {
   // Simulate code execution and testing
   const results: TestResult[] = []
   
-  props.challenge.testCases.forEach((testCase, index) => {
+  props.challenge.testCases.forEach((testCase) => {
     const passed = Math.random() > 0.3 // Simulate test results
     results.push({
       passed,

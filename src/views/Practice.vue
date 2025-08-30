@@ -154,7 +154,7 @@ const output = ref('')
 const activeTab = ref('preview')
 const consoleLogs = ref<Array<{ time: string; type: string; message: string }>>([])
 
-const templates = {
+const templates: Record<string, string> = {
   component: `<template>
   <div class="p-4">
     <h2 class="text-xl font-bold mb-4">{{ title }}</h2>
@@ -339,13 +339,14 @@ const runCode = () => {
     `
     addConsoleLog('success', 'Code executed successfully!')
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
     output.value = `
       <div class="text-red-500">
         <p class="font-bold">Error:</p>
-        <p>${error.message}</p>
+        <p>${errorMessage}</p>
       </div>
     `
-    addConsoleLog('error', error.message)
+    addConsoleLog('error', errorMessage)
   }
 }
 
