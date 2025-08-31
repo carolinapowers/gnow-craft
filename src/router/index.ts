@@ -10,6 +10,9 @@ import TestingPractice from '../views/TestingPractice.vue'
 import DataFetching from '../views/DataFetching.vue'
 import VueDebugging from '../views/VueDebugging.vue'
 import CssBestPractices from '../views/CssBestPractices.vue'
+import DebuggingExercises from '../views/DebuggingExercises.vue'
+import AdvancedPatterns from '../views/AdvancedPatterns.vue'
+import DebuggingSolutions from '../views/DebuggingSolutions.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -68,6 +71,21 @@ const router = createRouter({
       path: '/css-best-practices',
       name: 'css-best-practices',
       component: CssBestPractices
+    },
+    {
+      path: '/debugging-exercises',
+      name: 'debugging-exercises',
+      component: DebuggingExercises
+    },
+    {
+      path: '/advanced-patterns',
+      name: 'advanced-patterns',
+      component: AdvancedPatterns
+    },
+    {
+      path: '/debugging-solutions',
+      name: 'debugging-solutions',
+      component: DebuggingSolutions
     }
   ]
 })
