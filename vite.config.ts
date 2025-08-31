@@ -19,5 +19,6 @@ export default defineConfig({
   },
   build: {
     sourcemap: true
-  }
+  },
+  base: process.env.NODE_ENV === 'production' ? '/gnow-craft/' : '/'
 })

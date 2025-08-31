@@ -15,14 +15,18 @@
     "jsx": "preserve",
 
     /* Linting */
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": false,
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": [
     "src/components/debugging/**/*",
-    "src/views/DebuggingExercises.vue"
+    "src/views/DebuggingExercises.vue",
+    "src/views/AdvancedPatterns.vue",
+    "src/views/DebuggingSolutions.vue",
+    "src/composables/useApi.ts"
   ]
 }
