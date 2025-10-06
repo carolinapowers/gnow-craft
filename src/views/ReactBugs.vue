@@ -681,6 +681,608 @@ function DataFetcher({ url }) {
             </details>
           </div>
         </div>
+
+        <!-- Bug 8: Object/Array Dependency in useEffect -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-teal-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #8: Object Reference in Dependency Array 🔴
+              </h2>
+              <p class="text-gray-600">useEffect runs on every render due to object recreation</p>
+            </div>
+            <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Tricky
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Effect runs on every render even though data looks the same</li>
+                <li>Unnecessary API calls or expensive operations</li>
+                <li>Performance degradation</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function SearchResults(\{ query, filters }) {
+  const [results, setResults] = useState([]);
+
+  // ❌ filters is a new object every render!
+  useEffect(() => {
+    fetchResults(query, filters).then(setResults);
+  }, [query, filters]);
+
+  return &lt;ResultsList items={results} /&gt;;
+}
+
+// Parent creates new object every render
+function App() {
+  const [query, setQuery] = useState('');
+  return &lt;SearchResults query={query} filters=\{\{ type: 'all' }} /&gt;;
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Objects and arrays are compared by reference, not by value. A new object literal creates a new reference
+                  every render. Use useMemo to stabilize object references or depend on primitive values.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: useMemo in parent
+function App() {
+  const [query, setQuery] = useState('');
+  const filters = useMemo(() => (\{ type: 'all' }), []);
+  return &lt;SearchResults query={query} filters={filters} /&gt;;
+}
+
+// Solution 2: Depend on primitive values
+function SearchResults(\{ query, filterType }) {
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    const filters = \{ type: filterType };
+    fetchResults(query, filters).then(setResults);
+  }, [query, filterType]); // Primitives are stable
+
+  return &lt;ResultsList items={results} /&gt;;
+}
+
+// Solution 3: Use JSON stringify (careful!)
+useEffect(() => {
+  fetchResults(query, filters).then(setResults);
+}, [query, JSON.stringify(filters)]);</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Objects/arrays in dependency arrays should be memoized or destructured to primitives.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 9: Unnecessary Re-renders from Inline Functions -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-indigo-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #9: Performance Issue from Inline Functions 🔴
+              </h2>
+              <p class="text-gray-600">Child component re-renders unnecessarily due to new function references</p>
+            </div>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Performance
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Child components re-render even with React.memo</li>
+                <li>Slow performance with large lists</li>
+                <li>Profiler shows unnecessary renders</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>const ExpensiveChild = React.memo(({ onUpdate }) => {
+  console.log('Child rendered');
+  return &lt;button onClick={onUpdate}&gt;Update&lt;/button&gt;;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [other, setOther] = useState(0);
+
+  // ❌ New function created every render
+  return (
+    &lt;div&gt;
+      &lt;ExpensiveChild onUpdate={() => setCount(c => c + 1)} /&gt;
+      &lt;button onClick={() => setOther(o => o + 1)}&gt;
+        Other: {other}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Inline arrow functions create a new reference every render, causing memo'd children to re-render.
+                  Use useCallback to memoize function references when passing to optimized components.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>const ExpensiveChild = React.memo(({ onUpdate }) => {
+  console.log('Child rendered');
+  return &lt;button onClick={onUpdate}&gt;Update&lt;/button&gt;;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [other, setOther] = useState(0);
+
+  // ✅ Stable function reference
+  const handleUpdate = useCallback(() => {
+    setCount(c => c + 1);
+  }, []); // No dependencies needed with functional update
+
+  return (
+    &lt;div&gt;
+      &lt;ExpensiveChild onUpdate={handleUpdate} /&gt;
+      &lt;button onClick={() => setOther(o => o + 1)}&gt;
+        Other: {other}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Use useCallback for functions passed to memoized components or effect dependencies.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 10: Derived State Instead of Memo -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-rose-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #10: Derived State Sync Issues 🔴
+              </h2>
+              <p class="text-gray-600">State gets out of sync when props change</p>
+            </div>
+            <span class="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Common
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Component shows stale data when props update</li>
+                <li>Need to manually sync state with props</li>
+                <li>Data inconsistencies between parent and child</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function PriceDisplay(\{ basePrice, taxRate }) {
+  // ❌ Derived state doesn't update when props change
+  const [total, setTotal] = useState(basePrice * (1 + taxRate));
+
+  // This works but is unnecessarily complex
+  useEffect(() => {
+    setTotal(basePrice * (1 + taxRate));
+  }, [basePrice, taxRate]);
+
+  return &lt;div&gt;Total: ${total}&lt;/div&gt;;
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Don't use useState for values that can be calculated from props or other state.
+                  Use useMemo for expensive calculations or just calculate directly in render.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Just calculate it (for cheap operations)
+function PriceDisplay(\{ basePrice, taxRate }) {
+  const total = basePrice * (1 + taxRate);
+  return &lt;div&gt;Total: ${total}&lt;/div&gt;;
+}
+
+// Solution 2: useMemo for expensive calculations
+function ComplexCalculation(\{ data, filters }) {
+  const processedData = useMemo(() => {
+    // Expensive operation
+    return data
+      .filter(filters.filterFn)
+      .map(filters.mapFn)
+      .sort(filters.sortFn);
+  }, [data, filters]);
+
+  return &lt;DataTable data={processedData} /&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Prefer calculation over state synchronization. Use useMemo only when necessary.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 11: Forgetting to Return Cleanup in Custom Hook -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-amber-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #11: Custom Hook Memory Leak 🔴
+              </h2>
+              <p class="text-gray-600">Event listeners or subscriptions not cleaned up in custom hook</p>
+            </div>
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Important
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Event listeners pile up with each component mount</li>
+                <li>WebSocket connections stay open</li>
+                <li>Performance degrades over time</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    // ❌ No cleanup! Listener stays attached
+  }, []);
+
+  return size;
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Custom hooks follow the same rules as components. Always return cleanup functions from useEffect
+                  to remove event listeners, cancel subscriptions, or abort pending requests.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // ✅ Return cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return size;
+}
+
+// Usage is safe now
+function MyComponent() {
+  const { width, height } = useWindowSize();
+  return &lt;div&gt;{width} x {height}&lt;/div&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Custom hooks must clean up their side effects just like components.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 12: Race Condition with Async setState -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-cyan-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #12: Race Condition in Search 🔴
+              </h2>
+              <p class="text-gray-600">Old search results overwrite newer ones</p>
+            </div>
+            <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Advanced
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Typing fast shows wrong results</li>
+                <li>Results don't match current search query</li>
+                <li>Inconsistent behavior based on network speed</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function SearchComponent() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (!query) return;
+
+    // ❌ No race condition handling!
+    searchAPI(query).then(data => {
+      setResults(data); // Might be stale if query changed
+    });
+  }, [query]);
+
+  return (
+    &lt;div&gt;
+      &lt;input value={query} onChange={e => setQuery(e.target.value)} /&gt;
+      &lt;Results items={results} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  When the query changes before the previous request completes, you get a race condition.
+                  Use an ignore flag or AbortController to cancel/ignore stale requests.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Ignore flag
+function SearchComponent() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (!query) return;
+
+    let ignore = false;
+
+    searchAPI(query).then(data => {
+      if (!ignore) {
+        setResults(data);
+      }
+    });
+
+    return () => {
+      ignore = true; // Ignore results from previous query
+    };
+  }, [query]);
+
+  return &lt;div&gt;...&lt;/div&gt;;
+}
+
+// Solution 2: AbortController (better for actual cancellation)
+function SearchComponent() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (!query) return;
+
+    const controller = new AbortController();
+
+    fetch(\`/api/search?q=\${query}\`, {
+      signal: controller.signal
+    })
+      .then(res => res.json())
+      .then(data => setResults(data))
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      });
+
+    return () => controller.abort();
+  }, [query]);
+
+  return &lt;div&gt;...&lt;/div&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Always handle race conditions in async effects. Ignore or cancel stale requests.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 13: Controlled vs Uncontrolled Input Switching -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-lime-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #13: Controlled/Uncontrolled Component Warning 🔴
+              </h2>
+              <p class="text-gray-600">Input switches between controlled and uncontrolled</p>
+            </div>
+            <span class="bg-lime-100 text-lime-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Common
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Console warning about controlled/uncontrolled</li>
+                <li>Input behavior is unpredictable</li>
+                <li>Value becomes undefined or null</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function UserForm(\{ initialData }) {
+  const [formData, setFormData] = useState(initialData);
+
+  // ❌ If initialData is undefined, value is undefined
+  // Later if formData becomes defined, React warns
+  return (
+    &lt;input
+      value={formData?.name}
+      onChange={e => setFormData(\{
+        ...formData,
+        name: e.target.value
+      })}
+    /&gt;
+  );
+}
+
+// Parent might pass undefined initially
+&lt;UserForm initialData={user} /&gt; // user might be null</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  A component is controlled when value is defined (even empty string). It's uncontrolled when value is
+                  undefined. Never let value switch between undefined and defined. Use empty string as fallback.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Provide fallback value
+function UserForm(\{ initialData }) {
+  const [formData, setFormData] = useState(initialData || \{ name: '' });
+
+  return (
+    &lt;input
+      value={formData.name} // Always defined
+      onChange={e => setFormData(\{
+        ...formData,
+        name: e.target.value
+      })}
+    /&gt;
+  );
+}
+
+// Solution 2: Ensure value is never undefined
+function UserForm(\{ initialData }) {
+  const [name, setName] = useState(initialData?.name ?? '');
+
+  return (
+    &lt;input
+      value={name} // Always string, never undefined
+      onChange={e => setName(e.target.value)}
+    /&gt;
+  );
+}
+
+// Solution 3: Use uncontrolled with defaultValue
+function UserForm(\{ initialData }) {
+  return (
+    &lt;input
+      defaultValue={initialData?.name}
+      onChange={e => console.log(e.target.value)}
+    /&gt;
+  );
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Always provide a fallback value for controlled inputs. Never use undefined.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
       </div>
 
       <!-- Interview Tips Section -->
