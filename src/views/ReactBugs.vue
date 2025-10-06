@@ -7,8 +7,8 @@
           React Interview Debugging Scenarios
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Common React bugs you'll encounter in technical interviews. Each scenario includes buggy code,
-          symptoms, hints, and solutions.
+          16 common React bugs you'll encounter in technical interviews. Each scenario includes buggy code,
+          symptoms, hints, and complete solutions.
         </p>
       </div>
 
@@ -1283,6 +1283,292 @@ function UserForm(\{ initialData }) {
             </details>
           </div>
         </div>
+
+        <!-- Bug 14: Missing Key Prop Warning -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-fuchsia-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #14: Conditional Rendering Without Keys 🔴
+              </h2>
+              <p class="text-gray-600">Components lose state when conditionally rendered</p>
+            </div>
+            <span class="bg-fuchsia-100 text-fuchsia-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Tricky
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Form inputs reset when switching views</li>
+                <li>Component state disappears unexpectedly</li>
+                <li>Animations restart when they shouldn't</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function Dashboard(\{ view }) {
+  // ❌ Same component type without key
+  if (view === 'profile') {
+    return &lt;UserForm title="Edit Profile" /&gt;;
+  }
+
+  if (view === 'settings') {
+    return &lt;UserForm title="Settings" /&gt;;
+  }
+
+  return &lt;UserForm title="Account" /&gt;;
+}
+
+// React reuses the component, state persists incorrectly</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  React preserves component state when the component type and position in the tree stay the same.
+                  Use the key prop to force React to create a new component instance.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function Dashboard(\{ view }) {
+  // ✅ Use key to force new component instance
+  if (view === 'profile') {
+    return &lt;UserForm key="profile" title="Edit Profile" /&gt;;
+  }
+
+  if (view === 'settings') {
+    return &lt;UserForm key="settings" title="Settings" /&gt;;
+  }
+
+  return &lt;UserForm key="account" title="Account" /&gt;;
+}
+
+// Alternative: Use view as key
+function Dashboard(\{ view }) {
+  const titles = \{
+    profile: 'Edit Profile',
+    settings: 'Settings',
+    account: 'Account'
+  };
+
+  return &lt;UserForm key={view} title={titles[view]} /&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Use key prop to reset component state when rendering same component type conditionally.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 15: Async State Update After Unmount -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-sky-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #15: setState on Unmounted Component 🔴
+              </h2>
+              <p class="text-gray-600">State update attempted after component unmounted</p>
+            </div>
+            <span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Common
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Warning: Can't perform a React state update on unmounted component</li>
+                <li>Memory leak warnings in console</li>
+                <li>Unpredictable behavior when navigating away</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function DelayedMessage() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMessage('Hello!'); // ❌ Might run after unmount
+    }, 3000);
+  }, []);
+
+  return &lt;div&gt;{message}&lt;/div&gt;;
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Async operations (timeouts, intervals, promises) may complete after component unmounts.
+                  Use cleanup functions or mounted flags to prevent state updates on unmounted components.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Clear timeout on cleanup
+function DelayedMessage() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMessage('Hello!');
+    }, 3000);
+
+    return () => clearTimeout(timer); // ✅ Cleanup
+  }, []);
+
+  return &lt;div&gt;{message}&lt;/div&gt;;
+}
+
+// Solution 2: Use mounted flag
+function DelayedMessage() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    setTimeout(() => {
+      if (isMounted) {
+        setMessage('Hello!');
+      }
+    }, 3000);
+
+    return () => \{ isMounted = false; };
+  }, []);
+
+  return &lt;div&gt;{message}&lt;/div&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Always clean up async operations to prevent state updates after unmount.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 16: Context Re-render Performance -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-violet-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #16: Context Causing Unnecessary Re-renders 🔴
+              </h2>
+              <p class="text-gray-600">All context consumers re-render when any value changes</p>
+            </div>
+            <span class="bg-violet-100 text-violet-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Performance
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Entire app re-renders when one context value changes</li>
+                <li>Performance issues with large component trees</li>
+                <li>Components update even when their data didn't change</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>const AppContext = createContext();
+
+function AppProvider(\{ children }) {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState('light');
+
+  // ❌ New object every render causes all consumers to update
+  return (
+    &lt;AppContext.Provider value=\{\{ user, setUser, theme, setTheme }}&gt;
+      {children}
+    &lt;/AppContext.Provider&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Context value is an object created on every render. All consumers re-render when provider renders.
+                  Use useMemo to stabilize the context value, or split into multiple contexts.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Memoize context value
+function AppProvider(\{ children }) {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState('light');
+
+  const value = useMemo(
+    () => (\{ user, setUser, theme, setTheme }),
+    [user, theme]
+  );
+
+  return (
+    &lt;AppContext.Provider value={value}&gt;
+      {children}
+    &lt;/AppContext.Provider&gt;
+  );
+}
+
+// Solution 2: Split contexts (better!)
+const UserContext = createContext();
+const ThemeContext = createContext();
+
+function AppProvider(\{ children }) {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState('light');
+
+  return (
+    &lt;UserContext.Provider value=\{\{ user, setUser }}&gt;
+      &lt;ThemeContext.Provider value=\{\{ theme, setTheme }}&gt;
+        {children}
+      &lt;/ThemeContext.Provider&gt;
+    &lt;/UserContext.Provider&gt;
+  );
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Memoize context values or split into separate contexts to prevent unnecessary re-renders.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
       </div>
 
       <!-- Interview Tips Section -->
@@ -1361,11 +1647,11 @@ function UserForm(\{ initialData }) {
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">State not updating</td>
+                <td class="px-6 py-4 text-sm text-gray-900">State not updating in loop</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">setCount(prev => prev + 1)</td>
               </tr>
               <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Infinite loop</td>
+                <td class="px-6 py-4 text-sm text-gray-900">Infinite loop in useEffect</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">useEffect(() => {...}, [deps])</td>
               </tr>
               <tr>
@@ -1377,16 +1663,52 @@ function UserForm(\{ initialData }) {
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">key={item.id} not key={index}</td>
               </tr>
               <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">State mutation</td>
+                <td class="px-6 py-4 text-sm text-gray-900">Direct state mutation</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">setItems([...items, newItem])</td>
               </tr>
               <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Memory leak</td>
+                <td class="px-6 py-4 text-sm text-gray-900">Memory leak / cleanup missing</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">return () => cleanup()</td>
               </tr>
               <tr>
                 <td class="px-6 py-4 text-sm text-gray-900">Handler fires on render</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">onClick={() => handler()}</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Object in dependency array</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">useMemo(() => obj, [deps])</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Memo'd child re-renders</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">useCallback(() => fn, [deps])</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Derived state out of sync</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">const x = calculate(props) or useMemo</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Custom hook memory leak</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">useEffect cleanup in hook</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Race condition in async</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">let ignore = false; return () => ignore = true</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Controlled/uncontrolled switch</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">value={val ?? ''} never undefined</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Component state persists</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">Add key prop to reset state</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">setState after unmount</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">Clear timers in cleanup</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Context causes re-renders</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">useMemo context value or split contexts</td>
               </tr>
             </tbody>
           </table>
