@@ -29,3 +29,10 @@ body {
 .challenge-card:hover {
   transform: translateY(-4px);
 }
+
+/* Responsive code block font size for mobile */
+@media (max-width: 640px) {
+  pre, code {
+    font-size: 0.75rem !important;
+  }
+}

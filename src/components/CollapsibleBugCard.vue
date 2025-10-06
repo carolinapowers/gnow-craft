@@ -76,4 +76,15 @@ const badgeClass = computed(() => {
 details[open] summary svg {
   transform: rotate(90deg);
 }
+
+/* Responsive code block font size */
+@media (max-width: 640px) {
+  :deep(pre) {
+    font-size: 0.75rem;
+  }
+
+  :deep(code) {
+    font-size: 0.75rem;
+  }
+}
 </style>
