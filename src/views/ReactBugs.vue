@@ -7,8 +7,8 @@
           React Interview Debugging Scenarios
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          16 common React bugs you'll encounter in technical interviews. Each scenario includes buggy code,
-          symptoms, hints, and complete solutions.
+          20 common bugs (React-specific + universal patterns) you'll encounter in technical interviews.
+          Each scenario includes buggy code, symptoms, hints, and complete solutions.
         </p>
       </div>
 
@@ -1569,6 +1569,453 @@ function AppProvider(\{ children }) {
             </details>
           </div>
         </div>
+
+        <!-- Bug 17: Async/Await Without Error Handling -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-red-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #17: Unhandled Promise Rejection 🔴
+              </h2>
+              <p class="text-gray-600">Async operations crash the app without try/catch</p>
+            </div>
+            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Universal
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Unhandled promise rejection errors in console</li>
+                <li>No error message shown to user when API fails</li>
+                <li>Component stuck in loading state forever</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function UserProfile(\{ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      // ❌ No error handling!
+      const response = await fetch(\`/api/users/\${userId}\`);
+      const data = await response.json();
+      setUser(data);
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+  return &lt;div&gt;{user?.name}&lt;/div&gt;;
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Every async operation can fail. Always wrap async/await in try/catch blocks.
+                  Also check HTTP response status - fetch doesn't reject on 404/500 errors!
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function UserProfile(\{ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(\`/api/users/\${userId}\`);
+
+        // Check HTTP status
+        if (!response.ok) {
+          throw new Error(\`HTTP \${response.status}\`);
+        }
+
+        const data = await response.json();
+        setUser(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Failed to fetch user:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+  if (error) return &lt;div&gt;Error: {error}&lt;/div&gt;;
+  return &lt;div&gt;{user?.name}&lt;/div&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Always handle errors in async operations. Use try/catch and check response.ok for fetch.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 18: Debouncing Missing for Search Input -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-emerald-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #18: Search Without Debouncing 🔴
+              </h2>
+              <p class="text-gray-600">API called on every keystroke causing performance issues</p>
+            </div>
+            <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Universal
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Too many API requests (one per keystroke)</li>
+                <li>Poor performance and high server load</li>
+                <li>Search results flicker as user types</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function SearchBar() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (!query) return;
+
+    // ❌ API call on EVERY keystroke!
+    fetch(\`/api/search?q=\${query}\`)
+      .then(res => res.json())
+      .then(data => setResults(data));
+  }, [query]);
+
+  return (
+    &lt;input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search..."
+    /&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Use debouncing to delay the API call until user stops typing.
+                  Set a timeout that gets cleared on each keystroke, only fires after delay.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function SearchBar() {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  // Debounce the query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Search with debounced value
+  useEffect(() => {
+    if (!debouncedQuery) return;
+
+    fetch(\`/api/search?q=\${debouncedQuery}\`)
+      .then(res => res.json())
+      .then(data => setResults(data));
+  }, [debouncedQuery]);
+
+  return (
+    &lt;input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search..."
+    /&gt;
+  );
+}
+
+// Or use a custom hook
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Always debounce search inputs to reduce API calls and improve performance.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 19: N+1 Query Problem in Component -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-orange-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #19: N+1 Render Problem 🔴
+              </h2>
+              <p class="text-gray-600">Component makes separate API call for each item in list</p>
+            </div>
+            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Universal
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Hundreds of API requests for a single list</li>
+                <li>Extremely slow page load</li>
+                <li>Network tab filled with duplicate requests</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function UserCard(\{ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // ❌ Separate fetch for each card!
+    fetch(\`/api/users/\${userId}\`)
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, [userId]);
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;;
+}
+
+function UserList(\{ userIds }) {
+  return (
+    &lt;div&gt;
+      {userIds.map(id => (
+        &lt;UserCard key={id} userId={id} /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Fetch all data in the parent component, then pass it down as props.
+                  Or use a single batch API endpoint that accepts multiple IDs.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Solution 1: Fetch in parent
+function UserList(\{ userIds }) {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    // Single batch request
+    fetch(\`/api/users?ids=\${userIds.join(',')}\`)
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, [userIds]);
+
+  return (
+    &lt;div&gt;
+      {users.map(user => (
+        &lt;UserCard key={user.id} user={user} /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+
+function UserCard(\{ user }) {
+  return &lt;div&gt;{user.name}&lt;/div&gt;;
+}
+
+// Solution 2: Use React Query or SWR for automatic deduplication
+import \{ useQuery } from '@tanstack/react-query';
+
+function UserCard(\{ userId }) {
+  const \{ data: user } = useQuery(['user', userId], () =>
+    fetch(\`/api/users/\${userId}\`).then(r => r.json())
+  );
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Avoid N+1 problems by batching requests or using data-fetching libraries with deduplication.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bug 20: Unnecessary DOM Manipulation -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-slate-500">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Bug #20: Direct DOM Manipulation 🔴
+              </h2>
+              <p class="text-gray-600">Using querySelector instead of framework patterns</p>
+            </div>
+            <span class="bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm font-semibold">
+              Universal
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>UI state out of sync with component state</li>
+                <li>Changes get overwritten by framework re-renders</li>
+                <li>Hard to debug and maintain</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
+  const [count, setCount] = useState(0);
+
+  const highlight = () => {
+    // ❌ Direct DOM manipulation!
+    const button = document.querySelector('#myButton');
+    button.style.backgroundColor = 'yellow';
+
+    setTimeout(() => {
+      button.style.backgroundColor = '';
+    }, 1000);
+  };
+
+  return (
+    &lt;button id="myButton" onClick={() => {
+      setCount(count + 1);
+      highlight();
+    }}&gt;
+      Clicked {count} times
+    &lt;/button&gt;
+  );
+}</code></pre>
+            </div>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+                💡 Hint
+              </summary>
+              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+                <p class="text-gray-700">
+                  Use state to drive UI changes, not direct DOM manipulation.
+                  Let the framework handle DOM updates based on state changes.
+                </p>
+              </div>
+            </details>
+
+            <details class="group">
+              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+                ✅ Solution
+              </summary>
+              <div class="mt-2 p-4 bg-green-50 rounded-lg">
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
+  const [count, setCount] = useState(0);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  const handleClick = () => {
+    setCount(count + 1);
+    setIsHighlighted(true);
+
+    setTimeout(() => {
+      setIsHighlighted(false);
+    }, 1000);
+  };
+
+  return (
+    &lt;button
+      onClick={handleClick}
+      className={isHighlighted ? 'bg-yellow-200' : ''}
+      // Or inline style
+      style=\{\{ backgroundColor: isHighlighted ? 'yellow' : '' }}
+    &gt;
+      Clicked {count} times
+    &lt;/button&gt;
+  );
+}
+
+// For complex animations, use refs
+function AnimatedButton() {
+  const buttonRef = useRef(null);
+
+  const animate = () => {
+    buttonRef.current?.classList.add('pulse');
+    setTimeout(() => {
+      buttonRef.current?.classList.remove('pulse');
+    }, 1000);
+  };
+
+  return &lt;button ref={buttonRef} onClick={animate}&gt;Animate&lt;/button&gt;;
+}</code></pre>
+                <p class="mt-3 text-gray-700">
+                  <strong>Key Lesson:</strong> Use state and refs instead of querySelector. Let the framework manage the DOM.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
       </div>
 
       <!-- Interview Tips Section -->
@@ -1709,6 +2156,25 @@ function AppProvider(\{ children }) {
               <tr>
                 <td class="px-6 py-4 text-sm text-gray-900">Context causes re-renders</td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-600">useMemo context value or split contexts</td>
+              </tr>
+              <tr class="bg-blue-50">
+                <td class="px-6 py-4 text-sm text-gray-900 font-semibold" colspan="2">🌍 Universal (React & Vue)</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Unhandled async errors</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">try/catch + check response.ok</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Search without debounce</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">setTimeout + cleanup on each keystroke</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">N+1 API calls</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">Batch requests in parent component</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-gray-900">Direct DOM manipulation</td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-600">Use state/refs, not querySelector</td>
               </tr>
             </tbody>
           </table>
