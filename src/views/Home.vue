@@ -194,6 +194,13 @@ const sections: Section[] = [
     description: 'Fundamental JavaScript bugs that appear across all frameworks - closures, this binding, async, and more.',
     icon: '🟨',
     tags: ['JavaScript', 'Fundamentals', 'Universal', 'Core Concepts']
+  },
+  {
+    title: 'DOM Manipulation Gotchas',
+    path: '/dom-bugs',
+    description: '8 critical DOM bugs - NodeList vs Array, event delegation, XSS, reflow optimization, and more.',
+    icon: '🌐',
+    tags: ['DOM', 'Vanilla JS', 'Performance', 'Security']
   }
 ]
 </script>
