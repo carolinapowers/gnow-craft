@@ -201,6 +201,13 @@ const sections: Section[] = [
     description: '8 critical DOM bugs - NodeList vs Array, event delegation, XSS, reflow optimization, and more.',
     icon: '🌐',
     tags: ['DOM', 'Vanilla JS', 'Performance', 'Security']
+  },
+  {
+    title: 'TypeScript Cheat Sheet',
+    path: '/typescript-cheat-sheet',
+    description: '12 TypeScript gotchas with solutions - generics, utility types, type guards, and interview best practices.',
+    icon: '📘',
+    tags: ['TypeScript', 'Type Safety', 'Generics', 'Best Practices']
   }
 ]
 </script>

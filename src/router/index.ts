@@ -107,6 +107,11 @@ const router = createRouter({
       path: '/dom-bugs',
       name: 'dom-bugs',
       component: () => import('../views/DomBugs.vue')
+    },
+    {
+      path: '/typescript-cheat-sheet',
+      name: 'typescript-cheat-sheet',
+      component: () => import('../views/TypeScriptCheatSheet.vue')
     }
   ]
 })
