@@ -13,6 +13,7 @@ import CssBestPractices from '../views/CssBestPractices.vue'
 import DebuggingExercises from '../views/DebuggingExercises.vue'
 import AdvancedPatterns from '../views/AdvancedPatterns.vue'
 import DebuggingSolutions from '../views/DebuggingSolutions.vue'
+import VueCheatSheet from '../views/VueCheatSheet.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +87,16 @@ const router = createRouter({
       path: '/debugging-solutions',
       name: 'debugging-solutions',
       component: DebuggingSolutions
+    },
+    {
+      path: '/vue-cheat-sheet',
+      name: 'vue-cheat-sheet',
+      component: VueCheatSheet
+    },
+    {
+      path: '/react-bugs',
+      name: 'react-bugs',
+      component: () => import('../views/ReactBugs.vue')
     }
   ]
 })

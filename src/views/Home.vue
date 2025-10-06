@@ -173,6 +173,20 @@ const sections: Section[] = [
     description: 'Free-form practice area to experiment with Vue concepts and build components.',
     icon: '🎯',
     tags: ['Sandbox', 'Experimentation']
+  },
+  {
+    title: 'Vue Cheat Sheet',
+    path: '/vue-cheat-sheet',
+    description: 'Interactive Vue.js cheat sheet with live examples and quick reference for all core concepts.',
+    icon: '📚',
+    tags: ['Reference', 'Examples', 'Patterns', 'Quick Tests']
+  },
+  {
+    title: 'React Interview Bugs',
+    path: '/react-bugs',
+    description: 'Common React bugs you\'ll encounter in technical interviews with solutions and explanations.',
+    icon: '⚛️',
+    tags: ['React', 'Debugging', 'Hooks', 'Best Practices']
   }
 ]
 </script>
