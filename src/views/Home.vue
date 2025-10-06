@@ -187,6 +187,13 @@ const sections: Section[] = [
     description: 'Common React bugs you\'ll encounter in technical interviews with solutions and explanations.',
     icon: '⚛️',
     tags: ['React', 'Debugging', 'Hooks', 'Best Practices']
+  },
+  {
+    title: 'JavaScript Core Bugs',
+    path: '/javascript-bugs',
+    description: 'Fundamental JavaScript bugs that appear across all frameworks - closures, this binding, async, and more.',
+    icon: '🟨',
+    tags: ['JavaScript', 'Fundamentals', 'Universal', 'Core Concepts']
   }
 ]
 </script>

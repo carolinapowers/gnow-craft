@@ -97,6 +97,11 @@ const router = createRouter({
       path: '/react-bugs',
       name: 'react-bugs',
       component: () => import('../views/ReactBugs.vue')
+    },
+    {
+      path: '/javascript-bugs',
+      name: 'javascript-bugs',
+      component: () => import('../views/JavaScriptBugs.vue')
     }
   ]
 })
