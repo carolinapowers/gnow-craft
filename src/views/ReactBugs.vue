@@ -12,24 +12,37 @@
         </p>
       </div>
 
-      <!-- Bug Cards -->
-      <div class="space-y-8">
-        <!-- Bug 1: State Update in Loop -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-red-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #1: State Updates in Loop 🔴
-              </h2>
-              <p class="text-gray-600">Counter doesn't increment correctly when clicked multiple times rapidly</p>
+      <!-- Quick Reference -->
+      <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Quick Reference: Common Fixes</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <a
+            v-for="(fix, index) in quickFixes"
+            :key="index"
+            :href="`#bug-${index + 1}`"
+            @click="scrollToBug(index + 1, $event)"
+            class="flex items-start gap-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+          >
+            <span class="text-blue-600 font-bold text-sm">{{ index + 1 }}</span>
+            <div class="flex-1">
+              <div class="font-semibold text-gray-800 text-sm">{{ fix.problem }}</div>
+              <div class="text-xs text-gray-600 mt-1">{{ fix.solution }}</div>
             </div>
-            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
+          </a>
+        </div>
+      </div>
 
-          <div class="space-y-4">
-            <div>
+      <!-- Bug Cards -->
+      <div class="space-y-8 mt-12">
+        <!-- Bug 1: State Updates in Loop -->
+        <CollapsibleBugCard
+          id="bug-1"
+          title="Bug #1: State Updates in Loop 🔴"
+          description="Counter doesn't increment correctly when clicked multiple times rapidly"
+          badge="Common"
+          border-color="red"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Clicking "+3" button only increments by 1</li>
@@ -109,25 +122,17 @@
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 2: Infinite Loop with useEffect -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-orange-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #2: Infinite Loop in useEffect 🔴
-              </h2>
-              <p class="text-gray-600">Component re-renders infinitely and crashes the browser</p>
-            </div>
-            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Critical
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 2: Infinite Loop in useEffect -->
+        <CollapsibleBugCard
+          id="bug-2"
+          title="Bug #2: Infinite Loop in useEffect 🔴"
+          description="Component re-renders infinitely and crashes the browser"
+          badge="Critical"
+          border-color="orange"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Browser tab freezes or becomes unresponsive</li>
@@ -185,25 +190,17 @@
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 3: Stale Closure in Event Handler -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-purple-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #3: Stale Closure 🔴
-              </h2>
-              <p class="text-gray-600">Timer always shows 0 instead of incrementing count</p>
-            </div>
-            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Tricky
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 3: Stale Closure -->
+        <CollapsibleBugCard
+          id="bug-3"
+          title="Bug #3: Stale Closure 🔴"
+          description="Timer always shows 0 instead of incrementing count"
+          badge="Tricky"
+          border-color="purple"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Alert/console always shows initial value (0)</li>
@@ -291,25 +288,17 @@ function Timer() {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 4: Keys in Lists -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-blue-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #4: Incorrect List Keys 🔴
-              </h2>
-              <p class="text-gray-600">List items lose state when reordered or items are deleted</p>
-            </div>
-            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 4: Incorrect List Keys -->
+        <CollapsibleBugCard
+          id="bug-4"
+          title="Bug #4: Incorrect List Keys 🔴"
+          description="List items lose state when reordered or items are deleted"
+          badge="Common"
+          border-color="blue"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Input values swap when list is reordered</li>
@@ -382,25 +371,17 @@ const [todos, setTodos] = useState([
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 5: Direct State Mutation -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-pink-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #5: Mutating State Directly 🔴
-              </h2>
-              <p class="text-gray-600">Adding items to array doesn't trigger re-render</p>
-            </div>
-            <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 5: Mutating State Directly -->
+        <CollapsibleBugCard
+          id="bug-5"
+          title="Bug #5: Mutating State Directly 🔴"
+          description="Adding items to array doesn't trigger re-render"
+          badge="Common"
+          border-color="pink"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>UI doesn't update even though data changed</li>
@@ -478,25 +459,17 @@ const [todos, setTodos] = useState([
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 6: Missing Cleanup in useEffect -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-green-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #6: Memory Leak from Missing Cleanup 🔴
-              </h2>
-              <p class="text-gray-600">Warning: Can't perform state update on unmounted component</p>
-            </div>
-            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Important
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 6: Memory Leak from Missing Cleanup -->
+        <CollapsibleBugCard
+          id="bug-6"
+          title="Bug #6: Memory Leak from Missing Cleanup 🔴"
+          description="Warning: Can't perform state update on unmounted component"
+          badge="Important"
+          border-color="green"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Console warning about setState on unmounted component</li>
@@ -588,25 +561,17 @@ function DataFetcher({ url }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 7: Event Handler Binding -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-yellow-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #7: Incorrect Event Handler Syntax 🔴
-              </h2>
-              <p class="text-gray-600">Handler fires immediately on render instead of on click</p>
-            </div>
-            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Beginner
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 7: Incorrect Event Handler Syntax -->
+        <CollapsibleBugCard
+          id="bug-7"
+          title="Bug #7: Incorrect Event Handler Syntax 🔴"
+          description="Function executes on render instead of on click"
+          badge="Common"
+          border-color="red"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Function runs on every render</li>
@@ -679,25 +644,17 @@ function DataFetcher({ url }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 8: Object/Array Dependency in useEffect -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-teal-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #8: Object Reference in Dependency Array 🔴
-              </h2>
-              <p class="text-gray-600">useEffect runs on every render due to object recreation</p>
-            </div>
-            <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Tricky
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 8: Object Reference in Dependency Array -->
+        <CollapsibleBugCard
+          id="bug-8"
+          title="Bug #8: Object Reference in Dependency Array 🔴"
+          description="useEffect runs on every render even though object looks the same"
+          badge="Tricky"
+          border-color="yellow"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Effect runs on every render even though data looks the same</li>
@@ -771,25 +728,17 @@ useEffect(() => {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 9: Unnecessary Re-renders from Inline Functions -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-indigo-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #9: Performance Issue from Inline Functions 🔴
-              </h2>
-              <p class="text-gray-600">Child component re-renders unnecessarily due to new function references</p>
-            </div>
-            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Performance
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 9: Performance Issue from Inline Functions -->
+        <CollapsibleBugCard
+          id="bug-9"
+          title="Bug #9: Performance Issue from Inline Functions 🔴"
+          description="Child components re-render unnecessarily on every parent render"
+          badge="Performance"
+          border-color="orange"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Child components re-render even with React.memo</li>
@@ -866,25 +815,17 @@ function Parent() {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 10: Derived State Instead of Memo -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-rose-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #10: Derived State Sync Issues 🔴
-              </h2>
-              <p class="text-gray-600">State gets out of sync when props change</p>
-            </div>
-            <span class="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 10: Derived State Sync Issues -->
+        <CollapsibleBugCard
+          id="bug-10"
+          title="Bug #10: Derived State Sync Issues 🔴"
+          description="fullName doesn't update when props.firstName changes"
+          badge="Common"
+          border-color="purple"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Component shows stale data when props update</li>
@@ -948,25 +889,17 @@ function ComplexCalculation(\{ data, filters }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 11: Forgetting to Return Cleanup in Custom Hook -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-amber-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #11: Custom Hook Memory Leak 🔴
-              </h2>
-              <p class="text-gray-600">Event listeners or subscriptions not cleaned up in custom hook</p>
-            </div>
-            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Important
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 11: Custom Hook Memory Leak -->
+        <CollapsibleBugCard
+          id="bug-11"
+          title="Bug #11: Custom Hook Memory Leak 🔴"
+          description="WebSocket connections aren't cleaned up when component unmounts"
+          badge="Advanced"
+          border-color="red"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Event listeners pile up with each component mount</li>
@@ -1051,25 +984,17 @@ function MyComponent() {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 12: Race Condition with Async setState -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-cyan-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #12: Race Condition in Search 🔴
-              </h2>
-              <p class="text-gray-600">Old search results overwrite newer ones</p>
-            </div>
-            <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Advanced
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 12: Race Condition in Search -->
+        <CollapsibleBugCard
+          id="bug-12"
+          title="Bug #12: Race Condition in Search 🔴"
+          description="Search results show wrong data when typing quickly"
+          badge="Tricky"
+          border-color="yellow"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Typing fast shows wrong results</li>
@@ -1174,25 +1099,17 @@ function SearchComponent() {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 13: Controlled vs Uncontrolled Input Switching -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-lime-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #13: Controlled/Uncontrolled Component Warning 🔴
-              </h2>
-              <p class="text-gray-600">Input switches between controlled and uncontrolled</p>
-            </div>
-            <span class="bg-lime-100 text-lime-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 13: Controlled/Uncontrolled Component Warning -->
+        <CollapsibleBugCard
+          id="bug-13"
+          title="Bug #13: Controlled/Uncontrolled Component Warning 🔴"
+          description="Console warning about switching from controlled to uncontrolled input"
+          badge="Common"
+          border-color="pink"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Console warning about controlled/uncontrolled</li>
@@ -1281,25 +1198,17 @@ function UserForm(\{ initialData }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 14: Missing Key Prop Warning -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-fuchsia-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #14: Conditional Rendering Without Keys 🔴
-              </h2>
-              <p class="text-gray-600">Components lose state when conditionally rendered</p>
-            </div>
-            <span class="bg-fuchsia-100 text-fuchsia-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Tricky
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 14: Conditional Rendering Without Keys -->
+        <CollapsibleBugCard
+          id="bug-14"
+          title="Bug #14: Conditional Rendering Without Keys 🔴"
+          description="Component state persists when switching between different views"
+          badge="Subtle"
+          border-color="purple"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Form inputs reset when switching views</li>
@@ -1371,25 +1280,17 @@ function Dashboard(\{ view }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 15: Async State Update After Unmount -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-sky-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #15: setState on Unmounted Component 🔴
-              </h2>
-              <p class="text-gray-600">State update attempted after component unmounted</p>
-            </div>
-            <span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 15: setState on Unmounted Component -->
+        <CollapsibleBugCard
+          id="bug-15"
+          title="Bug #15: setState on Unmounted Component 🔴"
+          description="Memory leak warning after navigating away from page"
+          badge="Common"
+          border-color="orange"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Warning: Can't perform a React state update on unmounted component</li>
@@ -1468,25 +1369,17 @@ function DelayedMessage() {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 16: Context Re-render Performance -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-violet-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #16: Context Causing Unnecessary Re-renders 🔴
-              </h2>
-              <p class="text-gray-600">All context consumers re-render when any value changes</p>
-            </div>
-            <span class="bg-violet-100 text-violet-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Performance
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 16: Context Causing Unnecessary Re-renders -->
+        <CollapsibleBugCard
+          id="bug-16"
+          title="Bug #16: Context Causing Unnecessary Re-renders 🔴"
+          description="All context consumers re-render when any value changes"
+          badge="Performance"
+          border-color="red"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Entire app re-renders when one context value changes</li>
@@ -1567,25 +1460,17 @@ function AppProvider(\{ children }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 17: Async/Await Without Error Handling -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-red-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #17: Unhandled Promise Rejection 🔴
-              </h2>
-              <p class="text-gray-600">Async operations crash the app without try/catch</p>
-            </div>
-            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Universal
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 17: Unhandled Promise Rejection -->
+        <CollapsibleBugCard
+          id="bug-17"
+          title="Bug #17: Unhandled Promise Rejection 🔴"
+          description="App crashes silently when API request fails"
+          badge="Universal"
+          border-color="blue"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Unhandled promise rejection errors in console</li>
@@ -1675,25 +1560,17 @@ function AppProvider(\{ children }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 18: Debouncing Missing for Search Input -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-emerald-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #18: Search Without Debouncing 🔴
-              </h2>
-              <p class="text-gray-600">API called on every keystroke causing performance issues</p>
-            </div>
-            <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Universal
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 18: Search Without Debouncing -->
+        <CollapsibleBugCard
+          id="bug-18"
+          title="Bug #18: Search Without Debouncing 🔴"
+          description="API called on every keystroke, overwhelming the server"
+          badge="Universal"
+          border-color="blue"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Too many API requests (one per keystroke)</li>
@@ -1792,25 +1669,17 @@ function useDebounce(value, delay) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
-        <!-- Bug 19: N+1 Query Problem in Component -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-orange-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #19: N+1 Render Problem 🔴
-              </h2>
-              <p class="text-gray-600">Component makes separate API call for each item in list</p>
-            </div>
-            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Universal
-            </span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
+        <!-- Bug 19: N+1 Render Problem -->
+        <CollapsibleBugCard
+          id="bug-19"
+          title="Bug #19: N+1 Render Problem 🔴"
+          description="100 separate API calls instead of one batched request"
+          badge="Universal"
+          border-color="blue"
+        >
+          <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>Hundreds of API requests for a single list</li>
@@ -1901,36 +1770,28 @@ function UserCard(\{ userId }) {
                 </p>
               </div>
             </details>
-          </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 20: Unnecessary DOM Manipulation -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-slate-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #20: Direct DOM Manipulation 🔴
-              </h2>
-              <p class="text-gray-600">Using querySelector instead of framework patterns</p>
-            </div>
-            <span class="bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Universal
-            </span>
+        <CollapsibleBugCard
+          id="bug-20"
+          title="Bug #20: Direct DOM Manipulation 🔴"
+          description="Using querySelector instead of framework patterns"
+          badge="Universal"
+          border-color="blue"
+        >
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
+            <ul class="list-disc list-inside text-gray-700 space-y-1">
+              <li>UI state out of sync with component state</li>
+              <li>Changes get overwritten by framework re-renders</li>
+              <li>Hard to debug and maintain</li>
+            </ul>
           </div>
 
-          <div class="space-y-4">
-            <div>
-              <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
-              <ul class="list-disc list-inside text-gray-700 space-y-1">
-                <li>UI state out of sync with component state</li>
-                <li>Changes get overwritten by framework re-renders</li>
-                <li>Hard to debug and maintain</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
-              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-2">Buggy Code:</h3>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
   const [count, setCount] = useState(0);
 
   const highlight = () => {
@@ -1952,26 +1813,26 @@ function UserCard(\{ userId }) {
     &lt;/button&gt;
   );
 }</code></pre>
+          </div>
+
+          <details class="group">
+            <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
+              💡 Hint
+            </summary>
+            <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
+              <p class="text-gray-700">
+                Use state to drive UI changes, not direct DOM manipulation.
+                Let the framework handle DOM updates based on state changes.
+              </p>
             </div>
+          </details>
 
-            <details class="group">
-              <summary class="cursor-pointer bg-yellow-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-yellow-100 transition">
-                💡 Hint
-              </summary>
-              <div class="mt-2 p-4 bg-yellow-50 rounded-lg">
-                <p class="text-gray-700">
-                  Use state to drive UI changes, not direct DOM manipulation.
-                  Let the framework handle DOM updates based on state changes.
-                </p>
-              </div>
-            </details>
-
-            <details class="group">
-              <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
-                ✅ Solution
-              </summary>
-              <div class="mt-2 p-4 bg-green-50 rounded-lg">
-                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
+          <details class="group">
+            <summary class="cursor-pointer bg-green-50 p-4 rounded-lg font-semibold text-gray-800 hover:bg-green-100 transition">
+              ✅ Solution
+            </summary>
+            <div class="mt-2 p-4 bg-green-50 rounded-lg">
+              <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>function HighlightButton() {
   const [count, setCount] = useState(0);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
@@ -2009,13 +1870,12 @@ function AnimatedButton() {
 
   return &lt;button ref={buttonRef} onClick={animate}&gt;Animate&lt;/button&gt;;
 }</code></pre>
-                <p class="mt-3 text-gray-700">
-                  <strong>Key Lesson:</strong> Use state and refs instead of querySelector. Let the framework manage the DOM.
-                </p>
-              </div>
-            </details>
-          </div>
-        </div>
+              <p class="mt-3 text-gray-700">
+                <strong>Key Lesson:</strong> Use state and refs instead of querySelector. Let the framework manage the DOM.
+              </p>
+            </div>
+          </details>
+        </CollapsibleBugCard>
       </div>
 
       <!-- Interview Tips Section -->
@@ -2080,107 +1940,6 @@ function AnimatedButton() {
         </div>
       </div>
 
-      <!-- Quick Reference -->
-      <div class="mt-8 bg-white rounded-lg shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">Quick Reference: Common Fixes</h2>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Problem</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quick Fix</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">State not updating in loop</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">setCount(prev => prev + 1)</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Infinite loop in useEffect</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">useEffect(() => {...}, [deps])</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Stale closure</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Use functional setState or useRef</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">List re-render issues</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">key={item.id} not key={index}</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Direct state mutation</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">setItems([...items, newItem])</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Memory leak / cleanup missing</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">return () => cleanup()</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Handler fires on render</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">onClick={() => handler()}</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Object in dependency array</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">useMemo(() => obj, [deps])</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Memo'd child re-renders</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">useCallback(() => fn, [deps])</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Derived state out of sync</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">const x = calculate(props) or useMemo</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Custom hook memory leak</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">useEffect cleanup in hook</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Race condition in async</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">let ignore = false; return () => ignore = true</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Controlled/uncontrolled switch</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">value={val ?? ''} never undefined</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Component state persists</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Add key prop to reset state</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">setState after unmount</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Clear timers in cleanup</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Context causes re-renders</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">useMemo context value or split contexts</td>
-              </tr>
-              <tr class="bg-blue-50">
-                <td class="px-6 py-4 text-sm text-gray-900 font-semibold" colspan="2">🌍 Universal (React & Vue)</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Unhandled async errors</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">try/catch + check response.ok</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Search without debounce</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">setTimeout + cleanup on each keystroke</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">N+1 API calls</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Batch requests in parent component</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Direct DOM manipulation</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Use state/refs, not querySelector</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <!-- Navigation -->
       <div class="mt-8 text-center">
         <router-link
@@ -2195,5 +1954,43 @@ function AnimatedButton() {
 </template>
 
 <script setup lang="ts">
-// No additional logic needed for this view
+import CollapsibleBugCard from '@/components/CollapsibleBugCard.vue';
+
+const scrollToBug = (bugNumber: number, event: Event) => {
+  event.preventDefault();
+  const element = document.getElementById(`bug-${bugNumber}`);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Open the details element after scrolling
+    setTimeout(() => {
+      if (element instanceof HTMLDetailsElement && !element.open) {
+        element.open = true;
+      }
+    }, 500);
+  }
+};
+
+const quickFixes = [
+  { problem: 'State not updating in loop', solution: 'setCount(prev => prev + 1)' },
+  { problem: 'Infinite loop in useEffect', solution: 'useEffect(() => {...}, [deps])' },
+  { problem: 'Stale closure', solution: 'Use functional setState or useRef' },
+  { problem: 'List re-render issues', solution: 'key={item.id} not key={index}' },
+  { problem: 'Direct state mutation', solution: 'setItems([...items, newItem])' },
+  { problem: 'Memory leak / cleanup missing', solution: 'return () => cleanup()' },
+  { problem: 'Handler fires on render', solution: 'onClick={() => handler()}' },
+  { problem: 'Object in dependency array', solution: 'useMemo(() => obj, [deps])' },
+  { problem: "Memo'd child re-renders", solution: 'useCallback(() => fn, [deps])' },
+  { problem: 'Derived state out of sync', solution: 'const x = calculate(props) or useMemo' },
+  { problem: 'Custom hook memory leak', solution: 'useEffect cleanup in hook' },
+  { problem: 'Race condition in async', solution: 'let ignore = false; return () => ignore = true' },
+  { problem: 'Controlled/uncontrolled switch', solution: "value={val ?? ''} never undefined" },
+  { problem: 'Component state persists', solution: 'Add key prop to reset state' },
+  { problem: 'setState after unmount', solution: 'Clear timers in cleanup' },
+  { problem: 'Context causes re-renders', solution: 'useMemo context value or split contexts' },
+  { problem: 'Unhandled async errors', solution: 'try/catch + check response.ok' },
+  { problem: 'Search without debounce', solution: 'setTimeout + cleanup on each keystroke' },
+  { problem: 'N+1 API calls', solution: 'Batch requests in parent component' },
+  { problem: 'Direct DOM manipulation', solution: 'Use state/refs, not querySelector' }
+];
 </script>

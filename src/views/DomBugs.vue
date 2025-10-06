@@ -12,22 +12,36 @@
         </p>
       </div>
 
+      <!-- Quick Reference -->
+      <div class="mb-12 bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Quick Reference: Common Fixes</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <a
+            v-for="(fix, index) in quickFixes"
+            :key="index"
+            :href="`#bug-${index + 1}`"
+            @click="scrollToBug(index + 1, $event)"
+            class="flex items-start gap-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors cursor-pointer"
+          >
+            <span class="text-purple-600 font-bold text-sm">{{ index + 1 }}</span>
+            <div class="flex-1">
+              <div class="font-semibold text-gray-800 text-sm">{{ fix.problem }}</div>
+              <div class="text-xs text-gray-600 mt-1">{{ fix.solution }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
       <!-- Bug Cards -->
       <div class="space-y-8">
         <!-- Bug 1: NodeList vs Array -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-purple-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #1: NodeList/HTMLCollection Isn't an Array 🔴
-              </h2>
-              <p class="text-gray-600">Array methods don't work on DOM collections</p>
-            </div>
-            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Classic
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-1"
+          title="Bug #1: NodeList/HTMLCollection Isn't an Array 🔴"
+          description="Array methods don't work on DOM collections"
+          badge="Classic"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -101,22 +115,16 @@ items.forEach(item => {
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 2: Event Delegation -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-indigo-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #2: Events on Dynamically Added Elements 🔴
-              </h2>
-              <p class="text-gray-600">Event listeners don't work on elements added after page load</p>
-            </div>
-            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-2"
+          title="Bug #2: Events on Dynamically Added Elements 🔴"
+          description="Event listeners don't work on elements added after page load"
+          badge="Common"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -204,22 +212,16 @@ delegate(document.body, '.delete-btn', 'click', function(e) {
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 3: Live vs Static Collections -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-blue-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #3: Live Collection Infinite Loop 🔴
-              </h2>
-              <p class="text-gray-600">Loop never ends because collection updates while iterating</p>
-            </div>
-            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Tricky
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-3"
+          title="Bug #3: Live Collection Infinite Loop 🔴"
+          description="Loop never ends because collection updates while iterating"
+          badge="Tricky"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -301,22 +303,16 @@ for (let i = divs.length - 1; i >= 0; i--) {
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 4: innerHTML Security -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-red-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #4: XSS with innerHTML 🔴
-              </h2>
-              <p class="text-gray-600">User input injected as HTML creates security vulnerability</p>
-            </div>
-            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Critical
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-4"
+          title="Bug #4: XSS with innerHTML 🔴"
+          description="User input injected as HTML creates security vulnerability"
+          badge="Critical"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -393,22 +389,16 @@ element.innerHTML = `&lt;div&gt;${escapeHtml(userInput)}&lt;/div&gt;`;
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 5: Event Bubbling/Capturing -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-green-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #5: Event Propagation Confusion 🔴
-              </h2>
-              <p class="text-gray-600">Events fire multiple times or in wrong order</p>
-            </div>
-            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-5"
+          title="Bug #5: Event Propagation Confusion 🔴"
+          description="Events fire multiple times or in wrong order"
+          badge="Common"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -500,22 +490,16 @@ button.addEventListener('click', handler, { once: true });</code></pre>
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 6: classList Gotchas -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-yellow-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #6: className vs classList 🔴
-              </h2>
-              <p class="text-gray-600">String replacement loses existing classes</p>
-            </div>
-            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Common
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-6"
+          title="Bug #6: className vs classList 🔴"
+          description="String replacement loses existing classes"
+          badge="Common"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -595,22 +579,16 @@ btn.className = 'completely-new-class-list';</code></pre>
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 7: Reflow/Repaint Performance -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-orange-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #7: Layout Thrashing 🔴
-              </h2>
-              <p class="text-gray-600">Reading layout causes forced reflow on every iteration</p>
-            </div>
-            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Performance
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-7"
+          title="Bug #7: Layout Thrashing 🔴"
+          description="Reading layout causes forced reflow on every iteration"
+          badge="Performance"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -700,22 +678,16 @@ fastdom.measure(() => {
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
         <!-- Bug 8: DocumentFragment -->
-        <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-pink-500">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                Bug #8: Multiple Reflows from Sequential Appends 🔴
-              </h2>
-              <p class="text-gray-600">Appending elements one-by-one causes multiple reflows</p>
-            </div>
-            <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Performance
-            </span>
-          </div>
-
+        <CollapsibleBugCard
+          id="bug-8"
+          title="Bug #8: Multiple Reflows from Sequential Appends 🔴"
+          description="Appending elements one-by-one causes multiple reflows"
+          badge="Performance"
+          border-color="purple"
+        >
           <div class="space-y-4">
             <div>
               <h3 class="font-semibold text-gray-800 mb-2">Symptoms:</h3>
@@ -795,58 +767,8 @@ list.parentNode.replaceChild(newList, list);</code></pre>
               </div>
             </details>
           </div>
-        </div>
+        </CollapsibleBugCard>
 
-      </div>
-
-      <!-- Quick Reference -->
-      <div class="mt-12 bg-white rounded-lg shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">DOM Quick Reference</h2>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Problem</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Solution</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">NodeList isn't an Array</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Array.from() or [...nodeList]</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Events on dynamic elements</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Event delegation on parent</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Live collection loop issues</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Convert to array or querySelectorAll</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">XSS with user input</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Use textContent, not innerHTML</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Event bubbling problems</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">e.stopPropagation() or check target</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Class manipulation bugs</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Use classList methods</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Layout thrashing</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">Batch reads, then batch writes</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 text-sm text-gray-900">Multiple reflows</td>
-                <td class="px-6 py-4 text-sm font-mono text-gray-600">DocumentFragment or build offline</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
 
       <!-- Navigation -->
@@ -863,5 +785,31 @@ list.parentNode.replaceChild(newList, list);</code></pre>
 </template>
 
 <script setup lang="ts">
-// No additional logic needed for this view
+import CollapsibleBugCard from '@/components/CollapsibleBugCard.vue';
+
+const scrollToBug = (bugNumber: number, event: Event) => {
+  event.preventDefault();
+  const element = document.getElementById(`bug-${bugNumber}`);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Open the details element after scrolling
+    setTimeout(() => {
+      if (element instanceof HTMLDetailsElement && !element.open) {
+        element.open = true;
+      }
+    }, 500);
+  }
+};
+
+const quickFixes = [
+  { problem: 'NodeList isn\'t an Array', solution: 'Array.from() or [...nodeList]' },
+  { problem: 'Events on dynamic elements', solution: 'Event delegation on parent' },
+  { problem: 'Live collection loop issues', solution: 'Convert to array or querySelectorAll' },
+  { problem: 'XSS with user input', solution: 'Use textContent, not innerHTML' },
+  { problem: 'Event bubbling problems', solution: 'e.stopPropagation() or check target' },
+  { problem: 'Class manipulation bugs', solution: 'Use classList methods' },
+  { problem: 'Layout thrashing', solution: 'Batch reads, then batch writes' },
+  { problem: 'Multiple reflows', solution: 'DocumentFragment or build offline' }
+];
 </script>
