@@ -348,7 +348,7 @@ jobs:
               ### ✅ What was done:
               - Created feature branch: \`${process.env.BRANCH_NAME}\`
               - Generated component scaffold: \`${{ steps.parse.outputs.component_name }}.vue\`
-              - Generated test file with ${testCases.length} test cases based on issue requirements
+              - Generated test file with comprehensive test cases based on issue requirements
               - All tests are in RED state (failing) as per TDD
               
               ### 📋 Next Steps:
