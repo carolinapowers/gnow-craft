@@ -7,7 +7,9 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": ["vitest/globals"],
+    "moduleDetection": "force"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": [
